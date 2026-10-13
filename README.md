@@ -28,7 +28,7 @@ Checkpoint 5 – FrontEnd Design
 
 ## Link do GitHub
 
-https://github.com/SEU-USUARIO/techflow-dashboard
+https://github.com/JoaoFelipeMello/techflow-dashboard
 
 ## Dificuldades encontradas
 
