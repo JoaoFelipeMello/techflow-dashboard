@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TechFlow Dashboard</title>
+
+  <!-- Aplica o tema antes da página renderizar (evita "piscar" claro → escuro) -->
+  <script>
+    (function () {
+      var tema = localStorage.getItem('tema') || 'system';
+      var escuro = tema === 'dark' || (tema === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.classList.toggle('dark', escuro);
+    })();
+  </script>
+
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="min-h-screen bg-slate-100 text-slate-800 antialiased transition-colors duration-300 ease-in-out dark:bg-slate-950 dark:text-slate-200">
+
+  <!-- ===================== OVERLAY (menu mobile) ===================== -->
+  <div id="overlay" class="fixed inset-0 z-30 hidden bg-slate-900/50 backdrop-blur-sm lg:hidden"></div>
+
+  <!-- ===================== SIDEBAR ===================== -->
+  <aside id="sidebar"
+    class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col border-r border-slate-200 bg-white transition-transform duration-300 ease-in-out lg:translate-x-0 dark:border-slate-800 dark:bg-slate-900">
+
+    <div class="flex h-16 items-center justify-between border-b border-slate-200 px-6 dark:border-slate-800">
+      <a href="#" class="flex items-center gap-2 text-xl font-bold">
+        <span class="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white">T</span>
+        Tech<span class="text-indigo-600 dark:text-indigo-400">Flow</span>
+      </a>
+      <button id="btnFecharSidebar" aria-label="Fechar menu"
+        class="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 active:scale-95 lg:hidden dark:hover:bg-slate-800">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <nav class="flex flex-1 flex-col gap-1 overflow-y-auto p-4">
+      <p class="px-3 pb-2 text-xs font-semibold uppercase tracking-wider text-slate-400">Menu</p>
+
+      <a href="#" class="group flex items-center gap-3 rounded-lg bg-indigo-50 px-3 py-2.5 font-medium text-indigo-700 dark:bg-indigo-500/10 dark:text-indigo-300">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l9-9 9 9M5 10v10h14V10"/></svg>
+        Dashboard
+      </a>
+      <a href="#projetos" class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:pl-4 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white">
+        <svg class="h-5 w-5 transition-colors group-hover:text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18M3 12h18M3 17h18"/></svg>
+        Projetos
+      </a>
+      <a href="#" class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:pl-4 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white">
+        <svg class="h-5 w-5 transition-colors group-hover:text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 11l3 3 8-8M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2h9"/></svg>
+        Tarefas
+        <span class="ml-auto rounded-full bg-rose-100 px-2 py-0.5 text-xs font-semibold text-rose-600 dark:bg-rose-500/20 dark:text-rose-300">12</span>
+      </a>
+      <a href="#" class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:pl-4 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white">
+        <svg class="h-5 w-5 transition-colors group-hover:text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-5-4M9 20H2v-2a4 4 0 014-4h3a4 4 0 014 4v2zm3-12a4 4 0 11-8 0 4 4 0 018 0zm8 1a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+        Equipes
+      </a>
+      <a href="#" class="group flex items-center gap-3 rounded-lg px-3 py-2.5 text-slate-600 transition-all duration-200 hover:bg-slate-100 hover:pl-4 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white">
+        <svg class="h-5 w-5 transition-colors group-hover:text-indigo-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 19V9m6 10V5m6 14v-7m4 7H2"/></svg>
+        Relatórios
+      </a>
+
+      <p class="px-3 pb-2 pt-6 text-xs font-semibold uppercase tracking-wider text-slate-400">Outros</p>
+      <!-- Item desabilitado (estado disabled) -->
+      <button disabled title="Disponível em breve"
+        class="flex items-center gap-3 rounded-lg px-3 py-2.5 text-left text-slate-600 disabled:cursor-not-allowed disabled:opacity-40 dark:text-slate-400">
+        <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"/></svg>
+        Arquivados
+        <span class="ml-auto text-[10px] uppercase">em breve</span>
+      </button>
+    </nav>
+
+    <div class="m-4 rounded-xl bg-gradient-to-br from-indigo-600 to-violet-600 p-4 text-white">
+      <p class="font-semibold">Plano Pro</p>
+      <p class="mt-1 text-sm text-indigo-100">Desbloqueie relatórios avançados.</p>
+      <button class="mt-3 w-full rounded-lg bg-white/20 py-2 text-sm font-medium transition hover:bg-white/30 active:scale-95">Fazer upgrade</button>
+    </div>
+  </aside>
+
+  <!-- ===================== CONTEÚDO ===================== -->
+  <div class="flex min-h-screen flex-col lg:pl-64">
+
+    <!-- ===================== NAVBAR ===================== -->
+    <header class="sticky top-0 z-20 flex h-16 items-center justify-between gap-3 border-b border-slate-200 bg-white/80 px-4 backdrop-blur sm:px-6 dark:border-slate-800 dark:bg-slate-900/80">
+
+      <div class="flex flex-1 items-center gap-3">
+        <button id="btnAbrirSidebar" aria-label="Abrir menu"
+          class="rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 active:scale-95 lg:hidden dark:text-slate-300 dark:hover:bg-slate-800">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+
+        <!-- Campo de pesquisa -->
+        <div class="relative w-full max-w-md">
+          <svg class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="M21 21l-4.3-4.3"/></svg>
+          <input id="pesquisa" type="search" placeholder="Pesquisar projetos..."
+            class="w-full rounded-lg border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-sm outline-none transition-all duration-200 placeholder:text-slate-400 focus:border-indigo-500 focus:bg-white focus:ring-4 focus:ring-indigo-500/20 dark:border-slate-700 dark:bg-slate-800 dark:focus:bg-slate-900">
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Seletor de tema: Light | Dark | System -->
+        <div class="flex items-center rounded-lg border border-slate-200 bg-slate-50 p-1 dark:border-slate-700 dark:bg-slate-800" role="group" aria-label="Tema">
+          <button data-tema="light" title="Claro" class="btn-tema rounded-md p-1.5 text-slate-500 transition-all duration-200 hover:text-slate-900 dark:hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path stroke-linecap="round" d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4l1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+          </button>
+          <button data-tema="dark" title="Escuro" class="btn-tema rounded-md p-1.5 text-slate-500 transition-all duration-200 hover:text-slate-900 dark:hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/></svg>
+          </button>
+          <button data-tema="system" title="Sistema" class="btn-tema rounded-md p-1.5 text-slate-500 transition-all duration-200 hover:text-slate-900 dark:hover:text-white">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2"/><path stroke-linecap="round" d="M8 20h8M12 16v4"/></svg>
+          </button>
+        </div>
+
+        <!-- Notificações -->
+        <button aria-label="Notificações" class="relative hidden rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 active:scale-95 sm:block dark:hover:bg-slate-800">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.4-1.4A2 2 0 0118 14.2V11a6 6 0 10-12 0v3.2a2 2 0 01-.6 1.4L4 17h5m6 0a3 3 0 11-6 0"/></svg>
+          <span class="absolute right-1.5 top-1.5 h-2 w-2 animate-pulse rounded-full bg-rose-500"></span>
+        </button>
+
+        <!-- Dropdown do usuário -->
+        <div class="relative">
+          <button id="btnUsuario" aria-haspopup="true" aria-expanded="false"
+            class="flex items-center gap-2 rounded-lg p-1 transition hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-indigo-500/20 active:scale-95 dark:hover:bg-slate-800">
+            <img src="https://i.pravatar.cc/80?img=12" alt="Foto do usuário" class="h-8 w-8 rounded-full object-cover ring-2 ring-indigo-500">
+            <div class="hidden text-left md:block">
+              <p class="text-sm font-semibold leading-tight">João Mello</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Gerente de Projetos</p>
+            </div>
+            <svg id="setaUsuario" class="hidden h-4 w-4 text-slate-400 transition-transform duration-200 md:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 9l6 6 6-6"/></svg>
+          </button>
+
+          <div id="menuUsuario"
+            class="invisible absolute right-0 mt-2 w-60 origin-top-right scale-95 rounded-xl border border-slate-200 bg-white p-2 opacity-0 shadow-xl transition-all duration-200 ease-out dark:border-slate-700 dark:bg-slate-800">
+            <div class="border-b border-slate-100 px-3 pb-3 pt-1 dark:border-slate-700">
+              <p class="font-semibold">João Mello</p>
+              <p class="text-xs text-slate-500 dark:text-slate-400">joao@techflow.com</p>
+            </div>
+            <a href="#" class="mt-1 block rounded-lg px-3 py-2 text-sm transition hover:bg-slate-100 dark:hover:bg-slate-700">Meu perfil</a>
+            <a href="#" class="block rounded-lg px-3 py-2 text-sm transition hover:bg-slate-100 dark:hover:bg-slate-700">Configurações</a>
+
+            <!-- Toggle com peer-checked -->
+            <label class="flex cursor-pointer items-center justify-between rounded-lg px-3 py-2 text-sm transition hover:bg-slate-100 dark:hover:bg-slate-700">
+              Notificações por e-mail
+              <span class="relative">
+                <input type="checkbox" class="peer sr-only" checked>
+                <span class="block h-5 w-9 rounded-full bg-slate-300 transition-colors duration-200 peer-checked:bg-indigo-600 dark:bg-slate-600"></span>
+                <span class="absolute left-0.5 top-0.5 h-4 w-4 rounded-full bg-white shadow transition-transform duration-200 peer-checked:translate-x-4"></span>
+              </span>
+            </label>
+
+            <div class="mt-1 border-t border-slate-100 pt-1 dark:border-slate-700">
+              <a href="#" class="block rounded-lg px-3 py-2 text-sm text-rose-600 transition hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10">Sair</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ===================== ÁREA PRINCIPAL ===================== -->
+    <main class="flex-1 space-y-8 p-4 sm:p-6 xl:p-8 2xl:mx-auto 2xl:w-full 2xl:max-w-screen-2xl">
+
+      <!-- Título + ação -->
+      <section class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h1 class="text-2xl font-bold sm:text-3xl">Olá, João 👋</h1>
+          <p class="text-slate-500 dark:text-slate-400">Acompanhe seus projetos, equipes e indicadores.</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-3">
+          <button disabled title="Indisponível no momento"
+            class="rounded-lg border border-slate-300 px-4 py-2.5 text-sm font-medium transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-transparent dark:border-slate-700 dark:hover:bg-slate-800">
+            Exportar
+          </button>
+          <button id="btnNovoProjeto"
+            class="flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg shadow-indigo-600/30 transition-all duration-200 ease-in-out hover:-translate-y-0.5 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/40 active:translate-y-0 active:scale-95">
+            <svg class="h-4 w-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" d="M12 5v14M5 12h14"/></svg>
+            Novo projeto
+          </button>
+        </div>
+      </section>
+
+      <!-- ===================== CARDS DE INDICADORES ===================== -->
+      <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-6">
+
+        <article class="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Projetos ativos</p>
+            <p id="indAtivos" class="mt-1 text-3xl font-bold">8</p>
+            <p class="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">▲ 12% este mês</p>
+          </div>
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-100 text-indigo-600 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110 dark:bg-indigo-500/20 dark:text-indigo-300">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          </span>
+        </article>
+
+        <article class="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Projetos concluídos</p>
+            <p class="mt-1 text-3xl font-bold">24</p>
+            <p class="mt-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">▲ 4 nesta semana</p>
+          </div>
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-100 text-emerald-600 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110 dark:bg-emerald-500/20 dark:text-emerald-300">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </span>
+        </article>
+
+        <article class="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Tarefas pendentes</p>
+            <p class="mt-1 text-3xl font-bold">37</p>
+            <p class="mt-1 text-xs font-medium text-rose-600 dark:text-rose-400">▼ 5 atrasadas</p>
+          </div>
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-amber-100 text-amber-600 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110 dark:bg-amber-500/20 dark:text-amber-300">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M12 7v5l3 3"/></svg>
+          </span>
+        </article>
+
+        <article class="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900">
+          <div>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Equipes</p>
+            <p class="mt-1 text-3xl font-bold">6</p>
+            <p class="mt-1 text-xs font-medium text-slate-500 dark:text-slate-400">42 colaboradores</p>
+          </div>
+          <span class="flex h-12 w-12 items-center justify-center rounded-xl bg-sky-100 text-sky-600 transition-transform duration-300 group-hover:rotate-6 group-hover:scale-110 dark:bg-sky-500/20 dark:text-sky-300">
+            <svg class="h-6 w-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a4 4 0 00-5-4M9 20H2v-2a4 4 0 014-4h3a4 4 0 014 4v2zm3-12a4 4 0 11-8 0 4 4 0 018 0zm8 1a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+          </span>
+        </article>
+      </section>
+
+      <!-- ===================== PROJETOS (CSS GRID) ===================== -->
+      <section id="projetos" class="space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
+          <h2 class="text-xl font-bold">Projetos</h2>
+          <div class="flex flex-wrap gap-2" id="filtros">
+            <button data-filtro="todos" class="btn-filtro rounded-full px-3 py-1 text-sm font-medium transition">Todos</button>
+            <button data-filtro="andamento" class="btn-filtro rounded-full px-3 py-1 text-sm font-medium transition">Em andamento</button>
+            <button data-filtro="concluido" class="btn-filtro rounded-full px-3 py-1 text-sm font-medium transition">Concluídos</button>
+          </div>
+        </div>
+
+        <!-- Grid com cards de tamanhos diferentes (col-span / row-span) -->
+        <div id="gridProjetos" class="grid grid-flow-row-dense auto-rows-[minmax(11rem,auto)] grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-6">
+
+          <!-- Projeto destaque: ocupa 2 colunas e 2 linhas -->
+          <article data-status="andamento" data-nome="Portal do Cliente"
+            class="projeto group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-700 p-6 text-white transition-all duration-300 ease-out hover:shadow-2xl hover:shadow-indigo-600/30 md:col-span-2 md:row-span-2">
+            <div class="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 transition-transform duration-500 ease-out group-hover:scale-150"></div>
+            <div class="relative">
+              <span class="rounded-full bg-white/20 px-3 py-1 text-xs font-semibold">Destaque · Alta prioridade</span>
+              <h3 class="mt-4 text-2xl font-bold sm:text-3xl">Portal do Cliente</h3>
+              <p class="mt-2 max-w-md text-indigo-100">Nova plataforma de autoatendimento com área logada, histórico de pedidos e chat integrado.</p>
+            </div>
+            <div class="relative mt-6 space-y-4">
+              <div>
+                <div class="mb-1 flex justify-between text-sm"><span>Progresso</span><span>72%</span></div>
+                <div class="h-2 rounded-full bg-white/20"><div class="h-2 w-[72%] rounded-full bg-white"></div></div>
+              </div>
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <div class="flex -space-x-2">
+                  <img class="h-8 w-8 rounded-full ring-2 ring-indigo-600" src="https://i.pravatar.cc/64?img=1" alt="">
+                  <img class="h-8 w-8 rounded-full ring-2 ring-indigo-600" src="https://i.pravatar.cc/64?img=5" alt="">
+                  <img class="h-8 w-8 rounded-full ring-2 ring-indigo-600" src="https://i.pravatar.cc/64?img=8" alt="">
+                  <span class="flex h-8 w-8 items-center justify-center rounded-full bg-white/20 text-xs ring-2 ring-indigo-600">+4</span>
+                </div>
+                <span class="text-sm text-indigo-100">Prazo: 20/11/2026</span>
+              </div>
+            </div>
+          </article>
+
+          <article data-status="andamento" data-nome="App Mobile"
+            class="projeto group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/50">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-sky-100 px-2.5 py-0.5 text-xs font-semibold text-sky-700 dark:bg-sky-500/20 dark:text-sky-300">Mobile</span>
+                <span class="text-xs text-slate-400">15/12</span>
+              </div>
+              <h3 class="mt-3 font-semibold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">App Mobile</h3>
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Aplicativo iOS e Android.</p>
+            </div>
+            <div class="mt-4">
+              <div class="mb-1 flex justify-between text-xs text-slate-500"><span>Progresso</span><span>45%</span></div>
+              <div class="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-1.5 w-[45%] rounded-full bg-sky-500"></div></div>
+            </div>
+          </article>
+
+          <!-- Card alto: ocupa 2 linhas -->
+          <article data-status="andamento" data-nome="Migração para Cloud"
+            class="projeto group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl lg:row-span-2 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/50">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-xs font-semibold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300">Infra</span>
+                <span class="text-xs text-slate-400">30/01</span>
+              </div>
+              <h3 class="mt-3 font-semibold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Migração para Cloud</h3>
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Mover servidores on-premise para a nuvem com zero downtime.</p>
+              <ul class="mt-4 space-y-2 text-sm">
+                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Inventário</li>
+                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-emerald-500"></span>Banco de dados</li>
+                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-amber-500"></span>APIs</li>
+                <li class="flex items-center gap-2"><span class="h-2 w-2 rounded-full bg-slate-300 dark:bg-slate-600"></span>Front-end</li>
+              </ul>
+            </div>
+            <div class="mt-4">
+              <div class="mb-1 flex justify-between text-xs text-slate-500"><span>Progresso</span><span>58%</span></div>
+              <div class="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-1.5 w-[58%] rounded-full bg-amber-500"></div></div>
+            </div>
+          </article>
+
+          <article data-status="concluido" data-nome="Identidade Visual"
+            class="projeto group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/50">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-pink-100 px-2.5 py-0.5 text-xs font-semibold text-pink-700 dark:bg-pink-500/20 dark:text-pink-300">Design</span>
+                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">Concluído</span>
+              </div>
+              <h3 class="mt-3 font-semibold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Identidade Visual</h3>
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Novo logo e guia de marca.</p>
+            </div>
+            <div class="mt-4">
+              <div class="mb-1 flex justify-between text-xs text-slate-500"><span>Progresso</span><span>100%</span></div>
+              <div class="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-1.5 w-full rounded-full bg-emerald-500"></div></div>
+            </div>
+          </article>
+
+          <!-- Card largo: ocupa 2 colunas -->
+          <article data-status="andamento" data-nome="Dashboard de BI"
+            class="projeto group flex flex-col justify-between gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl sm:flex-row sm:items-center md:col-span-2 dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/50">
+            <div>
+              <span class="rounded-full bg-violet-100 px-2.5 py-0.5 text-xs font-semibold text-violet-700 dark:bg-violet-500/20 dark:text-violet-300">Dados</span>
+              <h3 class="mt-3 font-semibold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Dashboard de BI</h3>
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Painéis de vendas e indicadores em tempo real para a diretoria.</p>
+            </div>
+            <!-- Mini gráfico de barras -->
+            <div class="flex h-20 items-end gap-1.5">
+              <span class="w-3 rounded-t bg-violet-200 transition-all duration-300 group-hover:bg-violet-400 dark:bg-violet-500/30" style="height:40%"></span>
+              <span class="w-3 rounded-t bg-violet-200 transition-all duration-300 group-hover:bg-violet-400 dark:bg-violet-500/30" style="height:65%"></span>
+              <span class="w-3 rounded-t bg-violet-200 transition-all duration-300 group-hover:bg-violet-400 dark:bg-violet-500/30" style="height:50%"></span>
+              <span class="w-3 rounded-t bg-violet-200 transition-all duration-300 group-hover:bg-violet-400 dark:bg-violet-500/30" style="height:80%"></span>
+              <span class="w-3 rounded-t bg-violet-500 transition-all duration-300" style="height:100%"></span>
+              <span class="w-3 rounded-t bg-violet-200 transition-all duration-300 group-hover:bg-violet-400 dark:bg-violet-500/30" style="height:70%"></span>
+            </div>
+          </article>
+
+          <article data-status="concluido" data-nome="Treinamento LGPD"
+            class="projeto group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 transition-all duration-300 ease-out hover:-translate-y-1 hover:border-indigo-300 hover:shadow-xl dark:border-slate-800 dark:bg-slate-900 dark:hover:border-indigo-500/50">
+            <div>
+              <div class="flex items-center justify-between">
+                <span class="rounded-full bg-teal-100 px-2.5 py-0.5 text-xs font-semibold text-teal-700 dark:bg-teal-500/20 dark:text-teal-300">RH</span>
+                <span class="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300">Concluído</span>
+              </div>
+              <h3 class="mt-3 font-semibold transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400">Treinamento LGPD</h3>
+              <p class="mt-1 text-sm text-slate-500 dark:text-slate-400">Capacitação de todos os times.</p>
+            </div>
+            <div class="mt-4">
+              <div class="mb-1 flex justify-between text-xs text-slate-500"><span>Progresso</span><span>100%</span></div>
+              <div class="h-1.5 rounded-full bg-slate-100 dark:bg-slate-800"><div class="h-1.5 w-full rounded-full bg-emerald-500"></div></div>
+            </div>
+          </article>
+        </div>
+
+        <p id="semResultados" class="hidden rounded-2xl border border-dashed border-slate-300 p-8 text-center text-slate-500 dark:border-slate-700">
+          Nenhum projeto encontrado.
+        </p>
+      </section>
+    </main>
+
+    <footer class="border-t border-slate-200 px-6 py-4 text-center text-sm text-slate-500 dark:border-slate-800">
+      © 2026 TechFlow · Checkpoint 5 – FrontEnd Design
+    </footer>
+  </div>
+
+  <!-- ===================== MODAL NOVO PROJETO ===================== -->
+  <div id="modal" class="fixed inset-0 z-50 hidden items-end justify-center p-0 sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-labelledby="tituloModal">
+    <div id="modalFundo" class="absolute inset-0 bg-slate-900/60 opacity-0 backdrop-blur-sm transition-opacity duration-300"></div>
+
+    <div id="modalCaixa"
+      class="relative max-h-[95vh] w-full translate-y-8 overflow-y-auto rounded-t-2xl bg-white p-6 opacity-0 shadow-2xl transition-all duration-300 ease-out sm:max-w-2xl sm:rounded-2xl dark:bg-slate-900">
+
+      <div class="mb-6 flex items-center justify-between">
+        <h2 id="tituloModal" class="text-xl font-bold">Novo projeto</h2>
+        <button id="btnFecharModal" aria-label="Fechar"
+          class="rounded-lg p-2 text-slate-500 transition hover:bg-slate-100 hover:text-slate-900 active:scale-95 dark:hover:bg-slate-800 dark:hover:text-white">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+
+      <form id="formProjeto" novalidate class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div class="campo sm:col-span-2">
+          <label for="nome" class="mb-1 block text-sm font-medium">Nome do projeto *</label>
+          <input id="nome" name="nome" type="text" placeholder="Ex.: Novo site institucional" class="input">
+          <p class="msg mt-1 hidden text-xs"></p>
+        </div>
+
+        <div class="campo">
+          <label for="responsavel" class="mb-1 block text-sm font-medium">Responsável *</label>
+          <input id="responsavel" name="responsavel" type="text" placeholder="Nome completo" class="input">
+          <p class="msg mt-1 hidden text-xs"></p>
+        </div>
+
+        <div class="campo">
+          <label for="categoria" class="mb-1 block text-sm font-medium">Categoria *</label>
+          <select id="categoria" name="categoria" class="input">
+            <option value="">Selecione...</option>
+            <option>Desenvolvimento</option>
+            <option>Design</option>
+            <option>Infra</option>
+            <option>Dados</option>
+            <option>Marketing</option>
+          </select>
+          <p class="msg mt-1 hidden text-xs"></p>
+        </div>
+
+        <div class="campo">
+          <span class="mb-1 block text-sm font-medium">Prioridade *</span>
+          <!-- Opções com peer-checked -->
+          <div class="grid grid-cols-3 gap-2">
+            <label class="cursor-pointer">
+              <input type="radio" name="prioridade" value="Baixa" class="peer sr-only">
+              <span class="block rounded-lg border border-slate-300 py-2 text-center text-sm transition-all duration-200 hover:border-emerald-400 peer-checked:border-emerald-500 peer-checked:bg-emerald-50 peer-checked:font-semibold peer-checked:text-emerald-700 peer-focus-visible:ring-4 peer-focus-visible:ring-emerald-500/20 dark:border-slate-700 dark:peer-checked:bg-emerald-500/10 dark:peer-checked:text-emerald-300">Baixa</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="prioridade" value="Média" class="peer sr-only">
+              <span class="block rounded-lg border border-slate-300 py-2 text-center text-sm transition-all duration-200 hover:border-amber-400 peer-checked:border-amber-500 peer-checked:bg-amber-50 peer-checked:font-semibold peer-checked:text-amber-700 peer-focus-visible:ring-4 peer-focus-visible:ring-amber-500/20 dark:border-slate-700 dark:peer-checked:bg-amber-500/10 dark:peer-checked:text-amber-300">Média</span>
+            </label>
+            <label class="cursor-pointer">
+              <input type="radio" name="prioridade" value="Alta" class="peer sr-only">
+              <span class="block rounded-lg border border-slate-300 py-2 text-center text-sm transition-all duration-200 hover:border-rose-400 peer-checked:border-rose-500 peer-checked:bg-rose-50 peer-checked:font-semibold peer-checked:text-rose-700 peer-focus-visible:ring-4 peer-focus-visible:ring-rose-500/20 dark:border-slate-700 dark:peer-checked:bg-rose-500/10 dark:peer-checked:text-rose-300">Alta</span>
+            </label>
+          </div>
+          <p id="msgPrioridade" class="msg mt-1 hidden text-xs"></p>
+        </div>
+
+        <div class="campo">
+          <label for="prazo" class="mb-1 block text-sm font-medium">Prazo *</label>
+          <input id="prazo" name="prazo" type="date" class="input dark:[color-scheme:dark]">
+          <p class="msg mt-1 hidden text-xs"></p>
+        </div>
+
+        <div class="campo sm:col-span-2">
+          <label for="descricao" class="mb-1 flex justify-between text-sm font-medium">
+            Descrição * <span id="contador" class="font-normal text-slate-400">0/300</span>
+          </label>
+          <textarea id="descricao" name="descricao" rows="4" maxlength="300" placeholder="Descreva o objetivo do projeto (mín. 20 caracteres)" class="input resize-none"></textarea>
+          <p class="msg mt-1 hidden text-xs"></p>
+        </div>
+
+        <div id="alertaSucesso" class="hidden sm:col-span-2">
+          <div class="flex items-center gap-2 rounded-lg bg-emerald-50 p-3 text-sm font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
+          <svg class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          Projeto cadastrado com sucesso!
+          </div>
+        </div>
+
+        <div class="flex flex-col-reverse gap-3 pt-2 sm:col-span-2 sm:flex-row sm:justify-end">
+          <button type="button" id="btnCancelar"
+            class="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium transition hover:bg-slate-100 active:scale-95 dark:border-slate-700 dark:hover:bg-slate-800">
+            Cancelar
+          </button>
+          <button type="submit" id="btnSalvar"
+            class="flex items-center justify-center gap-2 rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white transition-all duration-200 hover:bg-indigo-700 focus:outline-none focus:ring-4 focus:ring-indigo-500/40 active:scale-95 disabled:cursor-not-allowed disabled:bg-slate-400 disabled:active:scale-100 dark:disabled:bg-slate-700">
+            Salvar projeto
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>
